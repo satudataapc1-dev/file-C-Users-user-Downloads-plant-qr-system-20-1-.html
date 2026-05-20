@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌿 WaterPlant QR System</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --green-deep: #1a3a2a;
+    --green-mid: #2d6a4f;
+    --green-light: #40916c;
+    --green-soft: #74c69d;
+    --green-pale: #b7e4c7;
+    --green-faint: #d8f3dc;
+    --accent: #f4a261;
+    --accent2: #e76f51;
+    --white: #fafff8;
+    --text: #1b2e22;
+    --muted: #5a7a65;
+    --card-bg: #ffffff;
+    --border: #c8e6d0;
+    --shadow: 0 4px 24px rgba(26,58,42,0.10);
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--green-faint);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    background: var(--green-deep);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+  }
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--green-pale);
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  .nav-brand span { font-size: 1.5rem; }
+  .nav-tabs {
+    display: flex;
+    gap: 4px;
+  }
+  .nav-tab {
+    padding: 7px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    color: var(--green-pale);
+    background: transparent;
+  }
+  .nav-tab:hover { background: rgba(255,255,255,0.1); }
+  .nav-tab.active {
+    background: var(--green-light);
+    color: #fff;
+  }
+
+  /* ─── PAGES ─── */
+  .page { display: none; padding: 32px; max-width: 1200px; margin: 0 auto; }
+  .page.active { display: block; }
+
+  /* ─── PAGE TITLES ─── */
+  .page-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--green-deep);
+    margin-bottom: 6px;
+  }
+  .page-sub {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 28px;
+  }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--green-deep);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ─── FORM ─── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .form-grid.cols3 { grid-template-columns: 1fr 1fr 1fr; }
+  .form-full { grid-column: 1 / -1; }
+  label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  input, select, textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--text);
+    background: var(--white);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--green-light);
+    box-shadow: 0 0 0 3px rgba(64,145,108,0.12);
+  }
+  textarea { resize: vertical; min-height: 80px; }
+
+  /* ─── BUTTONS ─── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: var(--green-light);
+    color: white;
+  }
+  .btn-primary:hover { background: var(--green-mid); transform: translateY(-1px); }
+  .btn-secondary {
+    background: var(--green-faint);
+    color: var(--green-deep);
+    border: 1.5px solid var(--border);
+  }
+  .btn-secondary:hover { background: var(--green-pale); }
+  .btn-danger {
+    background: #fee2e2;
+    color: #dc2626;
+  }
+  .btn-danger:hover { background: #fecaca; }
+  .btn-accent {
+    background: var(--accent);
+    color: white;
+  }
+  .btn-accent:hover { background: var(--accent2); }
+
+  /* ─── TABLE ─── */
+  .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+  th {
+    background: var(--green-faint);
+    color: var(--green-deep);
+    font-weight: 700;
+    padding: 12px 14px;
+    text-align: left;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+  td {
+    padding: 11px 14px;
+    border-top: 1px solid var(--green-faint);
+    vertical-align: middle;
+  }
+  tr:hover td { background: #f6fdf8; }
+  .mono { font-family: 'DM Mono', monospace; font-size: 0.82rem; }
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .badge-green { background: var(--green-faint); color: var(--green-mid); }
+  .badge-orange { background: #fff3e0; color: #e65100; }
+  .badge-red { background: #ffebee; color: #c62828; }
+  .stock-ok { color: var(--green-mid); font-weight: 700; }
+  .stock-low { color: #e65100; font-weight: 700; }
+  .stock-zero { color: #c62828; font-weight: 700; }
+
+  /* ─── QR PAGE ─── */
+  .qr-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  .qr-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s;
+  }
+  .qr-card:hover { transform: translateY(-2px); }
+  .qr-box { margin: 10px auto; display: inline-block; }
+  .qr-bak {
+    font-family: 'DM Mono', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--green-deep);
+    margin-bottom: 4px;
+  }
+  .qr-plant {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-bottom: 12px;
+    line-height: 1.4;
+  }
+  .qr-url {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--green-light);
+    word-break: break-all;
+    background: var(--green-faint);
+    padding: 4px 6px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  /* ─── INFO PAGE (QR scan view) ─── */
+  .info-search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .info-search-bar input { flex: 1; font-size: 1rem; padding: 12px 18px; }
+  .plant-info-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(26,58,42,0.12);
+    max-width: 480px;
+    margin: 0 auto;
+    border: 1px solid var(--border);
+  }
+  .plant-info-header {
+    background: linear-gradient(135deg, var(--green-mid), var(--green-light));
+    padding: 28px 28px 20px;
+    color: white;
+    position: relative;
+  }
+  .plant-info-header .area-badge {
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+  .plant-info-bak {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    opacity: 0.8;
+    margin-bottom: 4px;
+  }
+  .plant-info-name {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+  .plant-info-code {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    opacity: 0.7;
+  }
+  .plant-info-img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    background: var(--green-faint);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+  }
+  .plant-info-img img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+  }
+  .plant-info-body { padding: 24px 28px; }
+  .info-stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .info-stat {
+    background: var(--green-faint);
+    border-radius: 12px;
+    padding: 12px 14px;
+  }
+  .info-stat-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .info-stat-value {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--green-deep);
+    font-family: 'DM Mono', monospace;
+  }
+  .info-desc {
+    background: #f8f9fa;
+    border-left: 3px solid var(--green-light);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 16px;
+    font-size: 0.875rem;
+    color: var(--text);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .info-meta {
+    font-size: 0.78rem;
+    color: var(--muted);
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .info-meta span { display: flex; align-items: center; gap: 4px; }
+  .info-empty {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--muted);
+  }
+  .info-empty .big { font-size: 3rem; margin-bottom: 12px; }
+  .info-empty p { font-size: 0.9rem; }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    background: var(--green-deep);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ─── MODAL ─── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 20px;
+    padding: 32px;
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.2);
+  }
+  .modal-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--green-deep);
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: var(--muted);
+    line-height: 1;
+  }
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+
+  /* ─── STATS ─── */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    box-shadow: var(--shadow);
+  }
+  .stat-num {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--green-deep);
+    font-family: 'DM Mono', monospace;
+  }
+  .stat-lbl {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-top: 2px;
+  }
+
+  /* ─── PHOTO UPLOAD ─── */
+  .photo-upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--green-faint);
+  }
+  .photo-upload-zone:hover {
+    border-color: var(--green-light);
+    background: #ebf7ef;
+  }
+  .photo-preview-thumb {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 2px solid var(--border);
+  }
+  .filter-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter-row select, .filter-row input { width: auto; min-width: 160px; }
+
+  @media (max-width: 768px) {
+    .page { padding: 16px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .stat-grid { grid-template-columns: 1fr 1fr; }
+    nav { padding: 0 16px; }
+    .qr-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand"><span>🌿</span> WaterPlant QR</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('dashboard')">📊 Dashboard</button>
+    <button class="nav-tab" onclick="showPage('admin')">✏️ Input Data</button>
+    <button class="nav-tab" onclick="showPage('qrpage')">🔲 QR Codes</button>
+    <button class="nav-tab" onclick="showPage('infopage')">📱 Scan Info</button>
+  </div>
+</nav>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════ DASHBOARD ═══════════════ -->
+<div class="page active" id="page-dashboard">
+  <div class="page-title">📊 Dashboard Stock Tanaman</div>
+  <div class="page-sub">Ringkasan stok tanaman — Maret 2026 · WaterPlant Farm</div>
+
+  <div class="stat-grid" id="statGrid"></div>
+
+  <div class="card">
+    <div class="card-title">🌱 Semua Data Bak</div>
+    <div class="filter-row">
+      <input type="text" id="dashSearch" placeholder="🔍 Cari kode bak / nama tanaman..." oninput="renderTable()" style="min-width:220px;">
+      <select id="dashArea" onchange="renderTable()">
+        <option value="">Semua Area</option>
+        <option value="APC I">APC I</option>
+        <option value="APC II">APC II</option>
+      </select>
+      <select id="dashStatus" onchange="renderTable()">
+        <option value="">Semua Status</option>
+        <option value="ok">Stok OK (≥500)</option>
+        <option value="low">Stok Rendah (1–499)</option>
+        <option value="empty">Stok Habis (≤0)</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Kode Bak</th>
+            <th>Area</th>
+            <th>Kode Tanaman</th>
+            <th>Nama Tanaman</th>
+            <th>Stock Awal</th>
+            <th>Masuk</th>
+            <th>Keluar</th>
+            <th>Melting</th>
+            <th>Stock Akhir</th>
+            <th>Foto</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ ADMIN INPUT ═══════════════ -->
+<div class="page" id="page-admin">
+  <div class="page-title">✏️ Input & Kelola Data Tanaman</div>
+  <div class="page-sub">Tambah, edit, atau perbarui data tanaman dan foto per bak</div>
+
+  <div class="card">
+    <div class="card-title">➕ Tambah / Update Data Bak</div>
+    <div class="form-grid">
+      <div>
+        <label>Kode Bak *</label>
+        <input id="f_bak" type="text" placeholder="contoh: 4B-1.1" list="bakList">
+        <datalist id="bakList"></datalist>
+      </div>
+      <div>
+        <label>Area *</label>
+        <select id="f_area">
+          <option value="">Pilih Area</option>
+          <option value="APC I">APC I</option>
+          <option value="APC II">APC II</option>
+        </select>
+      </div>
+      <div>
+        <label>Kode Tanaman *</label>
+        <input id="f_kode" type="text" placeholder="contoh: L423" list="kodeList">
+        <datalist id="kodeList"></datalist>
+      </div>
+      <div>
+        <label>Nama Tanaman *</label>
+        <input id="f_nama" type="text" placeholder="contoh: Vallisneria asiatica">
+      </div>
+      <div>
+        <label>Stock Awal</label>
+        <input id="f_awal" type="number" placeholder="0">
+      </div>
+      <div>
+        <label>Masuk</label>
+        <input id="f_masuk" type="number" placeholder="0">
+      </div>
+      <div>
+        <label>Adjust</label>
+        <input id="f_adjust" type="number" placeholder="0">
+      </div>
+      <div>
+        <label>Keluar</label>
+        <input id="f_keluar" type="number" placeholder="0">
+      </div>
+      <div>
+        <label>Melting / Reject</label>
+        <input id="f_melting" type="number" placeholder="0">
+      </div>
+      <div>
+        <label>Stock Akhir (Otomatis)</label>
+        <input id="f_akhir" type="number" placeholder="dihitung otomatis" readonly style="background:#f0f4f2; color:var(--green-mid); font-weight:700;">
+      </div>
+      <div class="form-full">
+        <label>Keterangan / Deskripsi Tanaman</label>
+        <textarea id="f_desc" placeholder="Tuliskan deskripsi singkat tanaman, kondisi, catatan penting, dll..."></textarea>
+      </div>
+      <div class="form-full">
+        <label>Foto Tanaman</label>
+        <div style="display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap;">
+          <div>
+            <div class="photo-upload-zone" onclick="document.getElementById('f_foto').click()" style="width:180px;">
+              <div style="font-size:2rem;">📷</div>
+              <div style="font-size:0.8rem; color:var(--muted); margin-top:6px;">Klik untuk pilih foto</div>
+              <input type="file" id="f_foto" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+            </div>
+            <div style="font-size:0.75rem; color:var(--muted); margin-top:6px; text-align:center;">Format: JPG, PNG, WebP</div>
+          </div>
+          <div id="photoPreviewWrap" style="display:none;">
+            <img id="photoPreview" class="photo-preview-thumb" style="width:100px;height:100px;">
+            <br>
+            <button class="btn btn-danger" style="margin-top:6px; font-size:0.75rem; padding:5px 10px;" onclick="clearPhoto()">🗑 Hapus Foto</button>
+          </div>
+          <div style="flex:1; min-width:200px;">
+            <label>Atau URL Foto Eksternal</label>
+            <input id="f_fotoUrl" type="url" placeholder="https://..." oninput="previewUrl(this.value)">
+            <div style="font-size:0.75rem; color:var(--muted); margin-top:4px;">Paste link gambar dari internet</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="saveEntry()">💾 Simpan Data</button>
+      <button class="btn btn-secondary" onclick="clearForm()">🔄 Reset Form</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 Data Tersimpan (Edit / Hapus)</div>
+    <div class="filter-row">
+      <input type="text" id="adminSearch" placeholder="🔍 Cari..." oninput="renderAdminTable()" style="min-width:200px;">
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Kode Bak</th>
+            <th>Area</th>
+            <th>Tanaman</th>
+            <th>Stock Akhir</th>
+            <th>Foto</th>
+            <th>Deskripsi</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="adminTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ QR PAGE ═══════════════ -->
+<div class="page" id="page-qrpage">
+  <div class="page-title">🔲 QR Code Generator</div>
+  <div class="page-sub">QR Code permanen per bak — scan untuk lihat info tanaman real-time</div>
+
+  <div class="card" style="background: linear-gradient(135deg, var(--green-faint), #fff);">
+    <div class="card-title">💡 Cara Kerja Sistem</div>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; font-size:0.875rem; color:var(--muted);">
+      <div style="background:white; border-radius:12px; padding:16px; border:1px solid var(--border);">
+        <div style="font-size:1.5rem; margin-bottom:8px;">🔲</div>
+        <strong style="color:var(--text);">1. QR Permanen</strong>
+        <p style="margin-top:4px;">Setiap bak punya QR Code tetap yang <em>tidak perlu diubah</em> meski tanaman berganti.</p>
+      </div>
+      <div style="background:white; border-radius:12px; padding:16px; border:1px solid var(--border);">
+        <div style="font-size:1.5rem; margin-bottom:8px;">📱</div>
+        <strong style="color:var(--text);">2. Scan → Info Terkini</strong>
+        <p style="margin-top:4px;">QR mengarah ke halaman "Scan Info" yang otomatis menampilkan data terbaru dari database.</p>
+      </div>
+      <div style="background:white; border-radius:12px; padding:16px; border:1px solid var(--border);">
+        <div style="font-size:1.5rem; margin-bottom:8px;">✏️</div>
+        <strong style="color:var(--text);">3. Update Mudah</strong>
+        <p style="margin-top:4px;">Admin cukup update di halaman "Input Data" — foto & keterangan langsung berubah di semua perangkat.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+      <div class="card-title" style="margin:0;">🔲 QR Codes per Bak</div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn btn-secondary" onclick="printAllQR()">🖨️ Print Semua QR</button>
+        <button class="btn btn-primary" onclick="generateAllQR()">🔄 Generate Ulang</button>
+      </div>
+    </div>
+    <div class="qr-grid" id="qrGrid"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ INFO PAGE (Scan View) ═══════════════ -->
+<div class="page" id="page-infopage">
+  <div class="page-title">📱 Info Tanaman (Tampilan QR Scan)</div>
+  <div class="page-sub">Ini tampilan yang muncul saat QR Code di-scan. Ketik kode bak untuk preview.</div>
+
+  <div class="info-search-bar">
+    <input type="text" id="infoSearch" placeholder="Masukkan Kode Bak (contoh: 4B-1.1)" oninput="renderInfo()">
+    <button class="btn btn-primary" onclick="renderInfo()">🔍 Cari</button>
+  </div>
+
+  <div id="infoDisplay">
+    <div class="info-empty">
+      <div class="big">📱</div>
+      <p>Ketik kode bak di atas untuk melihat tampilan info seperti saat QR di-scan</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ EDIT MODAL ═══════════════ -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-title">
+      ✏️ Edit Data Bak
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="form-grid">
+      <div>
+        <label>Kode Bak</label>
+        <input id="e_bak" readonly style="background:#f0f4f2;">
+      </div>
+      <div>
+        <label>Area</label>
+        <select id="e_area">
+          <option value="APC I">APC I</option>
+          <option value="APC II">APC II</option>
+        </select>
+      </div>
+      <div>
+        <label>Kode Tanaman</label>
+        <input id="e_kode">
+      </div>
+      <div>
+        <label>Nama Tanaman</label>
+        <input id="e_nama">
+      </div>
+      <div>
+        <label>Stock Awal</label>
+        <input id="e_awal" type="number">
+      </div>
+      <div>
+        <label>Masuk</label>
+        <input id="e_masuk" type="number">
+      </div>
+      <div>
+        <label>Adjust</label>
+        <input id="e_adjust" type="number">
+      </div>
+      <div>
+        <label>Keluar</label>
+        <input id="e_keluar" type="number">
+      </div>
+      <div>
+        <label>Melting</label>
+        <input id="e_melting" type="number">
+      </div>
+      <div>
+        <label>Stock Akhir</label>
+        <input id="e_akhir" type="number">
+      </div>
+      <div class="form-full">
+        <label>Deskripsi</label>
+        <textarea id="e_desc"></textarea>
+      </div>
+      <div class="form-full">
+        <label>URL Foto</label>
+        <input id="e_foto" type="url" placeholder="https://...">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Batal</button>
+      <button class="btn btn-primary" onclick="saveEdit()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA AWAL (dari Excel) ───────────────────────────────────────────────
+const INITIAL_DATA = [
+  {AREA:"APC II",KODE_BAK:"4B-1.1",KODE_TANAMAN:"L423",JENIS:"Vallisneria asiatica",STOCK_AWAL:5000,MASUK:5000,ADJUST:0,KELUAR:0,MELTING:0,STOCK_AKHIR:10000,DESC:"Tanaman air pita ramping, tumbuh tegak, cocok untuk latar belakang akuarium. Daun pita panjang berwarna hijau cerah.",FOTO:""},
+  {AREA:"APC II",KODE_BAK:"4B-1.3",KODE_TANAMAN:"L424",JENIS:"Vallisneria contortionist",STOCK_AWAL:0,MASUK:9400,ADJUST:0,KELUAR:0,MELTING:0,STOCK_AKHIR:9400,DESC:"Variasi Vallisneria dengan daun yang berputar (twisted). Sangat dekoratif untuk aquascape.",FOTO:""},
+  {AREA:"APC II",KODE_BAK:"4B-1.5",KODE_TANAMAN:"L226",JENIS:"Elodea densa",STOCK_AWAL:10000,MASUK:0,ADJUST:0,KELUAR:5550,MELTING:0,STOCK_AKHIR:4450,DESC:"Tanaman air batang dengan pertumbuhan cepat. Sangat baik sebagai penyerap nutrisi berlebih dan penghasil oksigen.",FOTO:""},
+  {AREA:"APC II",KODE_BAK:"4B-1.6",KODE_TANAMAN:"L424",JENIS:"Vallisneria contortionist",STOCK_AWAL:9500,MASUK:217,ADJUST:3112,KELUAR:11772,MELTING:0,STOCK_AKHIR:1057,DESC:"Vallisneria contortionist dengan daun berputar khas. Tumbuh baik pada cahaya sedang.",FOTO:""},
+  {AREA:"APC II",KODE_BAK:"4B-1.7",KODE_TANAMAN:"L423",JENIS:"Vallisneria asiatica",STOCK_AWAL:5000,MASUK:0,ADJUST:0,KELUAR:0,MELTING:0,STOCK_AKHIR:5000,DESC:"Tanaman pita ramping dari Asia, ideal untuk latar belakang bak produksi.",FOTO:""},
+  {AREA:"APC II",KODE_BAK:"4B-1.7",KODE_TANAMAN:"L427",JENIS:"Vallisneria nana",STOCK_AWAL:4500,MASUK:3050,ADJUST:0,KELUAR:1748,MELTING:0,STOCK_AKHIR:5802,DESC:"Vallisneria ukuran mini/nano. Cocok untuk foreground dan akuarium kecil.",FOTO:""},
+  {AREA:"APC II",KODE_BAK:"4B-1.8",KODE_TANAMAN:"L430",JENIS:"Vallisneria spiralis",STOCK_AWAL:6100,MASUK:2850,ADJUST:365,KELUAR:2125,MELTING:0,STOCK_AKHIR:7190,DESC:"Vallisneria spiralis dengan daun pita panjang dan sedikit berputar. Salah satu jenis yang paling populer.",FOTO:""},
+  {AREA:"APC II",KODE_BAK:"4B-1.9",KODE_TANAMAN:"L226",JENIS:"Elodea densa",STOCK_AWAL:9500,MASUK:0,ADJUST:0,KELUAR:0,MELTING:0,STOCK_AKHIR:9500,DESC:"Elodea densa dengan pertumbuhan vigorous. Ideal untuk produksi massal.",FOTO:""},
+  {AREA:"APC II",KODE_BAK:"5A-1.1",KODE_TANAMAN:"L425",JENIS:"Vallisneria gigantea",STOCK_AWAL:1500,MASUK:500,ADJUST:2620,KELUAR:3970,MELTING:0,STOCK_AKHIR:650,DESC:"Vallisneria berukuran besar. Daun bisa mencapai 1 meter lebih, cocok untuk bak besar.",FOTO:""},
+  {AREA:"APC II",KODE_BAK:"5A-1.2",KODE_TANAMAN:"L125",JENIS:"Ceratophyllum demersum",STOCK_AWAL:900,MASUK:0,ADJUST:0,KELUAR:0,MELTING:900,STOCK_AKHIR:0,DESC:"Hornwort — tanaman mengapung tanpa akar. Pertumbuhan sangat cepat, baik untuk penyerap amonia.",FOTO:""},
+  {AREA:"APC II",KODE_BAK:"5A-1.3",KODE_TANAMAN:"L423",JENIS:"Vallisneria asiatica",STOCK_AWAL:2600,MASUK:0,ADJUST:9234,KELUAR:11754,MELTING:0,STOCK_AKHIR:80,DESC:"Vallisneria asiatica — stok kritis, perlu pemantauan segera.",FOTO:""},
+  {AREA:"APC II",KODE_BAK:"5A-1.4",KODE_TANAMAN:"L226",JENIS:"Elodea densa",STOCK_AWAL:6340,MASUK:0,ADJUST:2251,KELUAR:6700,MELTING:0,STOCK_AKHIR:1891,DESC:"Elodea densa, stok dalam pemulihan. Pertahankan kondisi air optimal.",FOTO:""},
+  {AREA:"APC II",KODE_BAK:"5A-1.5",KODE_TANAMAN:"L226",JENIS:"Elodea densa",STOCK_AWAL:10000,MASUK:5000,ADJUST:6602,KELUAR:16850,MELTING:1802,STOCK_AKHIR:2950,DESC:"Produksi aktif Elodea densa. Tingkat melting perlu diperhatikan.",FOTO:""},
+  {AREA:"APC II",KODE_BAK:"5A-1.6",KODE_TANAMAN:"L226",JENIS:"Elodea densa",STOCK_AWAL:8000,MASUK:0,ADJUST:3925,KELUAR:12200,MELTING:0,STOCK_AKHIR:-275,DESC:"⚠️ Stok minus — perlu pemeriksaan fisik dan penghitungan ulang.",FOTO:""},
+  {AREA:"APC II",KODE_BAK:"5A-1.7",KODE_TANAMAN:"L226",JENIS:"Elodea densa",STOCK_AWAL:10000,MASUK:5000,ADJUST:7841,KELUAR:15450,MELTING:2391,STOCK_AKHIR:5000,DESC:"Elodea densa stabil. Produktivitas baik meski ada melting signifikan.",FOTO:""},
+  {AREA:"APC II",KODE_BAK:"5A-1.8",KODE_TANAMAN:"L226",JENIS:"Elodea densa",STOCK_AWAL:8000,MASUK:5000,ADJUST:1725,KELUAR:8450,MELTING:1275,STOCK_AKHIR:5000,DESC:"Elodea densa. Kondisi stabil, pemeliharaan rutin direkomendasikan.",FOTO:""},
+  {AREA:"APC II",KODE_BAK:"5A-1.9",KODE_TANAMAN:"L227",JENIS:"Elodea naias",STOCK_AWAL:5000,MASUK:0,ADJUST:2250,KELUAR:2550,MELTING:0,STOCK_AKHIR:4700,DESC:"Elodea naias — variasi lebih ramping dari E. densa. Cocok untuk aquascape natural.",FOTO:""},
+  {AREA:"APC II",KODE_BAK:"5A-1.10",KODE_TANAMAN:"L227",JENIS:"Elodea naias",STOCK_AWAL:15000,MASUK:0,ADJUST:10980,KELUAR:10980,MELTING:0,STOCK_AKHIR:15000,DESC:"Stok besar Elodea naias. Produksi utama untuk export.",FOTO:""},
+  {AREA:"APC II",KODE_BAK:"G018",KODE_TANAMAN:"L423",JENIS:"Vallisneria asiatica",STOCK_AWAL:0,MASUK:1000,ADJUST:0,KELUAR:0,MELTING:0,STOCK_AKHIR:1000,DESC:"Bak greenhouse 18 — pembibitan Vallisneria asiatica.",FOTO:""},
+  {AREA:"APC II",KODE_BAK:"G020",KODE_TANAMAN:"L423",JENIS:"Vallisneria asiatica",STOCK_AWAL:0,MASUK:1000,ADJUST:0,KELUAR:0,MELTING:0,STOCK_AKHIR:1000,DESC:"Bak greenhouse 20 — pembibitan Vallisneria asiatica.",FOTO:""},
+  {AREA:"APC I",KODE_BAK:"G024",KODE_TANAMAN:"L423",JENIS:"Vallisneria asiatica",STOCK_AWAL:614,MASUK:0,ADJUST:5,KELUAR:110,MELTING:0,STOCK_AKHIR:509,DESC:"Greenhouse APC I. Tanaman dalam fase aklimatisasi.",FOTO:""},
+  {AREA:"APC I",KODE_BAK:"G025",KODE_TANAMAN:"L423",JENIS:"Vallisneria asiatica",STOCK_AWAL:1000,MASUK:0,ADJUST:0,KELUAR:400,MELTING:0,STOCK_AKHIR:600,DESC:"Greenhouse APC I. Stok aman untuk pengiriman berikutnya.",FOTO:""},
+  {AREA:"APC I",KODE_BAK:"G026",KODE_TANAMAN:"L427",JENIS:"Vallisneria nana",STOCK_AWAL:400,MASUK:0,ADJUST:0,KELUAR:0,MELTING:0,STOCK_AKHIR:400,DESC:"Vallisneria nana — nano grass aquatic. Pertumbuhan lambat tapi stabil.",FOTO:""},
+  {AREA:"APC I",KODE_BAK:"G027",KODE_TANAMAN:"L427",JENIS:"Vallisneria nana",STOCK_AWAL:365,MASUK:0,ADJUST:12,KELUAR:12,MELTING:0,STOCK_AKHIR:365,DESC:"Vallisneria nana. Stok stabil, pembaruan rutin.",FOTO:""},
+  {AREA:"APC I",KODE_BAK:"G028",KODE_TANAMAN:"L423",JENIS:"Vallisneria asiatica",STOCK_AWAL:450,MASUK:0,ADJUST:0,KELUAR:0,MELTING:0,STOCK_AKHIR:450,DESC:"Stok greenhouse kecil, siap panen batch selanjutnya.",FOTO:""},
+  {AREA:"APC I",KODE_BAK:"G029",KODE_TANAMAN:"L423",JENIS:"Vallisneria asiatica",STOCK_AWAL:250,MASUK:0,ADJUST:6,KELUAR:6,MELTING:0,STOCK_AKHIR:250,DESC:"Stok terbatas, monitor pertumbuhan.",FOTO:""},
+  {AREA:"APC I",KODE_BAK:"G030",KODE_TANAMAN:"L423",JENIS:"Vallisneria asiatica",STOCK_AWAL:275,MASUK:0,ADJUST:0,KELUAR:0,MELTING:0,STOCK_AKHIR:275,DESC:"Stok kecil, belum ada panen bulan ini.",FOTO:""},
+  {AREA:"APC I",KODE_BAK:"G031",KODE_TANAMAN:"L430",JENIS:"Vallisneria spiralis",STOCK_AWAL:300,MASUK:0,ADJUST:12,KELUAR:12,MELTING:0,STOCK_AKHIR:300,DESC:"Vallisneria spiralis — stok stabil di greenhouse.",FOTO:""},
+  {AREA:"APC I",KODE_BAK:"J028",KODE_TANAMAN:"L394X",JENIS:"Rotala rotundifolia orange juice (submersed)",STOCK_AWAL:0,MASUK:10800,ADJUST:0,KELUAR:2889,MELTING:2331,STOCK_AKHIR:5580,DESC:"Rotala orange juice submersed. Warna oranye cerah saat mendapat cahaya tinggi. Premium aquascape plant.",FOTO:""},
+  {AREA:"APC I",KODE_BAK:"J028",KODE_TANAMAN:"L395X",JENIS:"Rotala araguaia red cross (submersed)",STOCK_AWAL:4524,MASUK:6313,ADJUST:0,KELUAR:6869,MELTING:3368,STOCK_AKHIR:600,DESC:"Rotala araguaia red cross — stok kritis. Melting tinggi bulan ini, perlu evaluasi kondisi air.",FOTO:""},
+  {AREA:"APC I",KODE_BAK:"J029",KODE_TANAMAN:"L387X",JENIS:"Rotala rotundifolia H'ra (submersed)",STOCK_AWAL:1320,MASUK:7500,ADJUST:0,KELUAR:2904,MELTING:3476,STOCK_AKHIR:2440,DESC:"Rotala H'ra submersed. Perlu perhatian pada tingkat melting yang cukup tinggi.",FOTO:""},
+  {AREA:"APC I",KODE_BAK:"J030",KODE_TANAMAN:"L261X",JENIS:"Hygrophila difformis (submersed)",STOCK_AWAL:2050,MASUK:3400,ADJUST:0,KELUAR:3050,MELTING:600,STOCK_AKHIR:1800,DESC:"Hygrophila difformis — daun berlobus menarik. Mudah tumbuh, cocok untuk aquascape pemula.",FOTO:""},
+  {AREA:"APC I",KODE_BAK:"J031",KODE_TANAMAN:"L261X",JENIS:"Hygrophila difformis (submersed)",STOCK_AWAL:2850,MASUK:6420,ADJUST:0,KELUAR:6928,MELTING:38,STOCK_AKHIR:2304,DESC:"Hygrophila difformis — produksi aktif. Tingkat melting rendah, kondisi optimal.",FOTO:""},
+  {AREA:"APC I",KODE_BAK:"J032",KODE_TANAMAN:"L265X",JENIS:"Hygrophila polysperma (submersed)",STOCK_AWAL:0,MASUK:3763,ADJUST:0,KELUAR:2243,MELTING:340,STOCK_AKHIR:1180,DESC:"Hygrophila polysperma — salah satu tanaman air paling mudah tumbuh. Ideal untuk bak produksi.",FOTO:""},
+  {AREA:"APC I",KODE_BAK:"J033",KODE_TANAMAN:"L298X",JENIS:"Ludwigia inclinata red (Submersed)",STOCK_AWAL:650,MASUK:4675,ADJUST:0,KELUAR:2014,MELTING:542,STOCK_AKHIR:2769,DESC:"Ludwigia inclinata red — warna merah cerah premium. Butuh cahaya tinggi dan CO2 untuk warna optimal.",FOTO:""},
+  {AREA:"APC I",KODE_BAK:"J034",KODE_TANAMAN:"L298X",JENIS:"Ludwigia inclinata red (Submersed)",STOCK_AWAL:2770,MASUK:1830,ADJUST:0,KELUAR:2531,MELTING:1249,STOCK_AKHIR:820,DESC:"Ludwigia inclinata red — perhatikan melting tinggi bulan ini.",FOTO:""},
+  {AREA:"APC I",KODE_BAK:"J035",KODE_TANAMAN:"L023X",JENIS:"Ammania sp. Sulawesi (submersed)",STOCK_AWAL:1020,MASUK:2000,ADJUST:0,KELUAR:3013,MELTING:7,STOCK_AKHIR:0,DESC:"Ammania Sulawesi — stok habis. Perlu pengisian/tanam baru segera.",FOTO:""}
+];
+
+// ─── STATE ───────────────────────────────────────────────────────────────
+let editIdx = null;
+let photoDataUrl = '';
+
+function loadData() {
+  const saved = localStorage.getItem('wplantData');
+  if (saved) return JSON.parse(saved);
+  return JSON.parse(JSON.stringify(INITIAL_DATA));
+}
+function saveData(data) {
+  localStorage.setItem('wplantData', JSON.stringify(data));
+}
+let DATA = loadData();
+
+// ─── NAV ─────────────────────────────────────────────────────────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (id === 'dashboard') { renderStats(); renderTable(); }
+  if (id === 'admin') { renderAdminTable(); populateDatalist(); }
+  if (id === 'qrpage') { generateAllQR(); }
+}
+
+// ─── TOAST ───────────────────────────────────────────────────────────────
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ─── STATS ───────────────────────────────────────────────────────────────
+function renderStats() {
+  const total = DATA.length;
+  const ok = DATA.filter(d => d.STOCK_AKHIR >= 500).length;
+  const low = DATA.filter(d => d.STOCK_AKHIR > 0 && d.STOCK_AKHIR < 500).length;
+  const empty = DATA.filter(d => d.STOCK_AKHIR <= 0).length;
+  document.getElementById('statGrid').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-lbl">Total Bak</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--green-mid)">${ok}</div><div class="stat-lbl">✅ Stok OK</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#e65100">${low}</div><div class="stat-lbl">⚠️ Stok Rendah</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:#c62828">${empty}</div><div class="stat-lbl">🔴 Stok Habis</div></div>
+  `;
+}
+
+// ─── DASHBOARD TABLE ────────────────────────────────────────────────────
+function renderTable() {
+  const q = (document.getElementById('dashSearch').value || '').toLowerCase();
+  const area = document.getElementById('dashArea').value;
+  const status = document.getElementById('dashStatus').value;
+  const rows = DATA.filter(d => {
+    const match = !q || (d.KODE_BAK+d.JENIS+d.KODE_TANAMAN).toLowerCase().includes(q);
+    const aMatch = !area || d.AREA === area;
+    let sMatch = true;
+    if (status === 'ok') sMatch = d.STOCK_AKHIR >= 500;
+    if (status === 'low') sMatch = d.STOCK_AKHIR > 0 && d.STOCK_AKHIR < 500;
+    if (status === 'empty') sMatch = d.STOCK_AKHIR <= 0;
+    return match && aMatch && sMatch;
+  });
+
+  document.getElementById('tableBody').innerHTML = rows.map((d, i) => {
+    const sc = d.STOCK_AKHIR >= 500 ? 'stock-ok' : d.STOCK_AKHIR > 0 ? 'stock-low' : 'stock-zero';
+    const realIdx = DATA.indexOf(d);
+    const fotoThumb = d.FOTO ? `<img src="${d.FOTO}" style="width:36px;height:36px;object-fit:cover;border-radius:6px;border:1px solid var(--border);">` : `<span style="font-size:1.2rem;">🌿</span>`;
+    return `<tr>
+      <td><span class="mono">${d.KODE_BAK}</span></td>
+      <td><span class="badge badge-green">${d.AREA || '—'}</span></td>
+      <td><span class="mono">${d.KODE_TANAMAN}</span></td>
+      <td>${d.JENIS}</td>
+      <td class="mono">${d.STOCK_AWAL ?? '—'}</td>
+      <td class="mono">+${d.MASUK}</td>
+      <td class="mono">-${d.KELUAR}</td>
+      <td class="mono">${d.MELTING > 0 ? '⚠️ ' + d.MELTING : d.MELTING}</td>
+      <td><span class="${sc} mono">${d.STOCK_AKHIR}</span></td>
+      <td>${fotoThumb}</td>
+      <td><button class="btn btn-secondary" style="padding:4px 10px;font-size:0.75rem;" onclick="openEdit(${realIdx})">✏️ Edit</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ─── ADMIN TABLE ────────────────────────────────────────────────────────
+function renderAdminTable() {
+  const q = (document.getElementById('adminSearch').value || '').toLowerCase();
+  const rows = DATA.filter(d => !q || (d.KODE_BAK + d.JENIS).toLowerCase().includes(q));
+  document.getElementById('adminTableBody').innerHTML = rows.map((d) => {
+    const realIdx = DATA.indexOf(d);
+    const sc = d.STOCK_AKHIR >= 500 ? 'stock-ok' : d.STOCK_AKHIR > 0 ? 'stock-low' : 'stock-zero';
+    const fotoThumb = d.FOTO ? `<img src="${d.FOTO}" style="width:36px;height:36px;object-fit:cover;border-radius:6px;border:1px solid var(--border);">` : '—';
+    return `<tr>
+      <td><span class="mono">${d.KODE_BAK}</span></td>
+      <td><span class="badge badge-green">${d.AREA || '—'}</span></td>
+      <td><em>${d.JENIS}</em></td>
+      <td><span class="${sc} mono">${d.STOCK_AKHIR}</span></td>
+      <td>${fotoThumb}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.8rem;color:var(--muted);">${d.DESC || '—'}</td>
+      <td style="display:flex;gap:6px;">
+        <button class="btn btn-secondary" style="padding:4px 10px;font-size:0.75rem;" onclick="openEdit(${realIdx})">✏️ Edit</button>
+        <button class="btn btn-danger" style="padding:4px 10px;font-size:0.75rem;" onclick="deleteEntry(${realIdx})">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ─── POPULASI DATALIST ───────────────────────────────────────────────────
+function populateDatalist() {
+  const bakList = document.getElementById('bakList');
+  const kodeList = document.getElementById('kodeList');
+  const baks = [...new Set(DATA.map(d => d.KODE_BAK))];
+  const kodes = [...new Set(DATA.map(d => d.KODE_TANAMAN + ' — ' + d.JENIS))];
+  bakList.innerHTML = baks.map(b => `<option value="${b}">`).join('');
+  kodeList.innerHTML = kodes.map(k => `<option value="${k}">`).join('');
+}
+
+// ─── AUTO HITUNG STOCK ───────────────────────────────────────────────────
+function autoCalcStock() {
+  const a = parseFloat(document.getElementById('f_awal').value) || 0;
+  const m = parseFloat(document.getElementById('f_masuk').value) || 0;
+  const adj = parseFloat(document.getElementById('f_adjust').value) || 0;
+  const k = parseFloat(document.getElementById('f_keluar').value) || 0;
+  const ml = parseFloat(document.getElementById('f_melting').value) || 0;
+  document.getElementById('f_akhir').value = a + m + adj - k - ml;
+}
+['f_awal','f_masuk','f_adjust','f_keluar','f_melting'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', autoCalcStock);
+});
+
+// ─── FOTO UPLOAD ─────────────────────────────────────────────────────────
+function previewPhoto(input) {
+  if (!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    photoDataUrl = e.target.result;
+    document.getElementById('photoPreview').src = photoDataUrl;
+    document.getElementById('photoPreviewWrap').style.display = 'block';
+    document.getElementById('f_fotoUrl').value = '';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+function previewUrl(url) {
+  if (!url) return;
+  photoDataUrl = url;
+}
+function clearPhoto() {
+  photoDataUrl = '';
+  document.getElementById('photoPreview').src = '';
+  document.getElementById('photoPreviewWrap').style.display = 'none';
+  document.getElementById('f_foto').value = '';
+  document.getElementById('f_fotoUrl').value = '';
+}
+
+// ─── SAVE ENTRY ──────────────────────────────────────────────────────────
+function saveEntry() {
+  const bak = document.getElementById('f_bak').value.trim();
+  const area = document.getElementById('f_area').value;
+  const kode = document.getElementById('f_kode').value.trim();
+  const nama = document.getElementById('f_nama').value.trim();
+  if (!bak || !nama) { toast('⚠️ Kode Bak dan Nama Tanaman wajib diisi!'); return; }
+
+  const foto = photoDataUrl || document.getElementById('f_fotoUrl').value.trim();
+  const newEntry = {
+    AREA: area, KODE_BAK: bak, KODE_TANAMAN: kode, JENIS: nama,
+    STOCK_AWAL: parseFloat(document.getElementById('f_awal').value) || 0,
+    MASUK: parseFloat(document.getElementById('f_masuk').value) || 0,
+    ADJUST: parseFloat(document.getElementById('f_adjust').value) || 0,
+    KELUAR: parseFloat(document.getElementById('f_keluar').value) || 0,
+    MELTING: parseFloat(document.getElementById('f_melting').value) || 0,
+    STOCK_AKHIR: parseFloat(document.getElementById('f_akhir').value) || 0,
+    DESC: document.getElementById('f_desc').value.trim(),
+    FOTO: foto
+  };
+
+  // Update existing or add new
+  const existIdx = DATA.findIndex(d => d.KODE_BAK === bak && d.KODE_TANAMAN === kode);
+  if (existIdx >= 0) {
+    DATA[existIdx] = newEntry;
+    toast('✅ Data ' + bak + ' diperbarui!');
+  } else {
+    DATA.push(newEntry);
+    toast('✅ Data bak ' + bak + ' berhasil ditambahkan!');
+  }
+  saveData(DATA);
+  clearForm();
+  renderAdminTable();
+}
+
+function clearForm() {
+  ['f_bak','f_area','f_kode','f_nama','f_awal','f_masuk','f_adjust','f_keluar','f_melting','f_akhir','f_desc','f_fotoUrl'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  clearPhoto();
+}
+
+function deleteEntry(idx) {
+  if (!confirm('Hapus data bak ' + DATA[idx].KODE_BAK + '?')) return;
+  DATA.splice(idx, 1);
+  saveData(DATA);
+  renderAdminTable();
+  toast('🗑 Data dihapus');
+}
+
+// ─── EDIT MODAL ──────────────────────────────────────────────────────────
+function openEdit(idx) {
+  editIdx = idx;
+  const d = DATA[idx];
+  document.getElementById('e_bak').value = d.KODE_BAK;
+  document.getElementById('e_area').value = d.AREA || '';
+  document.getElementById('e_kode').value = d.KODE_TANAMAN;
+  document.getElementById('e_nama').value = d.JENIS;
+  document.getElementById('e_awal').value = d.STOCK_AWAL ?? '';
+  document.getElementById('e_masuk').value = d.MASUK;
+  document.getElementById('e_adjust').value = d.ADJUST;
+  document.getElementById('e_keluar').value = d.KELUAR;
+  document.getElementById('e_melting').value = d.MELTING;
+  document.getElementById('e_akhir').value = d.STOCK_AKHIR;
+  document.getElementById('e_desc').value = d.DESC || '';
+  document.getElementById('e_foto').value = d.FOTO || '';
+  document.getElementById('editModal').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('editModal').classList.remove('open');
+  editIdx = null;
+}
+function saveEdit() {
+  const d = DATA[editIdx];
+  d.AREA = document.getElementById('e_area').value;
+  d.KODE_TANAMAN = document.getElementById('e_kode').value;
+  d.JENIS = document.getElementById('e_nama').value;
+  d.STOCK_AWAL = parseFloat(document.getElementById('e_awal').value) || 0;
+  d.MASUK = parseFloat(document.getElementById('e_masuk').value) || 0;
+  d.ADJUST = parseFloat(document.getElementById('e_adjust').value) || 0;
+  d.KELUAR = parseFloat(document.getElementById('e_keluar').value) || 0;
+  d.MELTING = parseFloat(document.getElementById('e_melting').value) || 0;
+  d.STOCK_AKHIR = parseFloat(document.getElementById('e_akhir').value) || 0;
+  d.DESC = document.getElementById('e_desc').value;
+  d.FOTO = document.getElementById('e_foto').value;
+  saveData(DATA);
+  closeModal();
+  renderAdminTable();
+  renderTable();
+  renderStats();
+  toast('✅ Data berhasil diperbarui!');
+}
+
+// ─── QR GENERATOR ────────────────────────────────────────────────────────
+function generateAllQR() {
+  const grid = document.getElementById('qrGrid');
+  grid.innerHTML = '';
+  const base = window.location.href.split('?')[0].split('#')[0];
+  // Gunakan query param (?scan=) — lebih kompatibel di semua browser HP
+  const baseUrl = base + '?scan=';
+
+  // Get unique baks
+  const baks = [];
+  const seen = new Set();
+  DATA.forEach(d => {
+    if (!seen.has(d.KODE_BAK)) { seen.add(d.KODE_BAK); baks.push(d); }
+  });
+
+  baks.forEach(d => {
+    const url = baseUrl + encodeURIComponent(d.KODE_BAK);
+    const card = document.createElement('div');
+    card.className = 'qr-card';
+    card.innerHTML = `
+      <div class="qr-bak">${d.KODE_BAK}</div>
+      <div class="qr-plant">${d.JENIS}</div>
+      <div class="qr-box" id="qr-${d.KODE_BAK.replace(/[^a-z0-9]/gi,'_')}"></div>
+      <span class="qr-url">${url.length > 60 ? url.slice(0,60)+'...' : url}</span>
+      <button class="btn btn-secondary" style="font-size:0.72rem;padding:4px 10px;width:100%;" onclick="downloadQR('${d.KODE_BAK}')">⬇️ Download</button>
+    `;
+    grid.appendChild(card);
+
+    try {
+      const qid = 'qr-' + d.KODE_BAK.replace(/[^a-z0-9]/gi,'_');
+      new QRCode(document.getElementById(qid), {
+        text: url, width: 120, height: 120,
+        colorDark: '#1a3a2a', colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    } catch(e) {}
+  });
+}
+
+function downloadQR(kode) {
+  const qid = 'qr-' + kode.replace(/[^a-z0-9]/gi,'_');
+  const el = document.getElementById(qid);
+  if (!el) return;
+  const canvas = el.querySelector('canvas');
+  if (!canvas) { toast('⚠️ QR belum ter-generate'); return; }
+  const link = document.createElement('a');
+  link.download = 'QR_BAK_' + kode + '.png';
+  link.href = canvas.toDataURL();
+  link.click();
+  toast('⬇️ QR Code ' + kode + ' didownload!');
+}
+
+function printAllQR() {
+  window.print();
+}
+
+// ─── INFO PAGE ────────────────────────────────────────────────────────────
+function renderInfo() {
+  const q = document.getElementById('infoSearch').value.trim().toUpperCase();
+  if (!q) {
+    document.getElementById('infoDisplay').innerHTML = `<div class="info-empty"><div class="big">📱</div><p>Ketik kode bak di atas untuk melihat tampilan info seperti saat QR di-scan</p></div>`;
+    return;
+  }
+
+  const matches = DATA.filter(d => d.KODE_BAK.toUpperCase() === q || d.KODE_BAK.toUpperCase().includes(q));
+  if (!matches.length) {
+    document.getElementById('infoDisplay').innerHTML = `<div class="info-empty"><div class="big">🔍</div><p>Kode bak "<strong>${q}</strong>" tidak ditemukan dalam database</p></div>`;
+    return;
+  }
+
+  // If multiple plants in same bak, show all
+  const area = matches[0].AREA || '—';
+  const bakCode = matches[0].KODE_BAK;
+  const foto = matches[0].FOTO;
+  const desc = matches[0].DESC || 'Tidak ada keterangan tersedia.';
+  const totalStock = matches.reduce((a,b) => a + (b.STOCK_AKHIR || 0), 0);
+  const sc = totalStock >= 500 ? '#40916c' : totalStock > 0 ? '#e65100' : '#c62828';
+
+  const plantRows = matches.map(d => `
+    <div style="background:white;border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <span class="mono" style="font-size:0.78rem;color:var(--muted);">${d.KODE_TANAMAN}</span>
+          <div style="font-weight:600;font-size:0.95rem;">${d.JENIS}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:1.4rem;font-weight:800;color:${sc};font-family:'DM Mono',monospace;">${d.STOCK_AKHIR}</div>
+          <div style="font-size:0.7rem;color:var(--muted);">pcs</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  const imgHtml = foto
+    ? `<img src="${foto}" style="width:100%;height:220px;object-fit:cover;" onerror="this.parentNode.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;height:220px;font-size:5rem;background:var(--green-faint)\\'>🌿</div>'">`
+    : `<div style="display:flex;align-items:center;justify-content:center;height:220px;font-size:5rem;background:var(--green-faint);">🌿</div>`;
+
+  const statsMini = matches.length === 1 ? `
+    <div class="info-stat-grid">
+      <div class="info-stat"><div class="info-stat-label">Masuk</div><div class="info-stat-value">+${matches[0].MASUK}</div></div>
+      <div class="info-stat"><div class="info-stat-label">Keluar</div><div class="info-stat-value">-${matches[0].KELUAR}</div></div>
+      <div class="info-stat"><div class="info-stat-label">Adjust</div><div class="info-stat-value">${matches[0].ADJUST || 0}</div></div>
+      <div class="info-stat"><div class="info-stat-label">Melting</div><div class="info-stat-value">${matches[0].MELTING}</div></div>
+    </div>
+  ` : `<div style="margin-bottom:16px;">${plantRows}</div>`;
+
+  document.getElementById('infoDisplay').innerHTML = `
+    <div class="plant-info-card">
+      <div class="plant-info-header">
+        <div class="area-badge">${area}</div>
+        <div class="plant-info-bak">Kode Bak: ${bakCode}</div>
+        <div class="plant-info-name">${matches[0].JENIS}</div>
+        <div class="plant-info-code">${matches[0].KODE_TANAMAN}</div>
+      </div>
+      <div class="plant-info-img">${imgHtml}</div>
+      <div class="plant-info-body">
+        ${statsMini}
+        ${desc ? `<div class="info-desc">📝 ${desc}</div>` : ''}
+        <div class="info-meta">
+          <span>📅 Maret 2026</span>
+          <span>🌿 WaterPlant Farm</span>
+          <span>✅ Data Real-time</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ─── URL HASH ROUTING (for QR scan) ──────────────────────────────────────
+function checkHash() {
+  const hash = window.location.hash;
+  if (hash && hash.startsWith('#scan=')) {
+    const bak = decodeURIComponent(hash.slice(6)); // lebih reliable dari replace
+    // Sembunyikan nav saat dibuka via QR (mode scan)
+    document.querySelector('nav').style.display = 'none';
+    // Tampilkan hanya halaman info
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const infoPage = document.getElementById('page-infopage');
+    infoPage.classList.add('active');
+    // Sembunyikan judul/sub dan search bar (tampilan bersih)
+    const title = infoPage.querySelector('.page-title');
+    const sub = infoPage.querySelector('.page-sub');
+    const searchBar = infoPage.querySelector('.info-search-bar');
+    if (title) title.style.display = 'none';
+    if (sub) sub.style.display = 'none';
+    if (searchBar) searchBar.style.display = 'none';
+    // Set dan render
+    document.getElementById('infoSearch').value = bak;
+    renderInfo();
+    window.scrollTo(0, 0);
+  }
+}
+
+// ─── QUERY PARAM ROUTING (fallback untuk browser yang strip hash) ──────────
+function checkQueryParam() {
+  const params = new URLSearchParams(window.location.search);
+  const bak = params.get('scan');
+  if (bak) {
+    document.querySelector('nav').style.display = 'none';
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const infoPage = document.getElementById('page-infopage');
+    infoPage.classList.add('active');
+    const title = infoPage.querySelector('.page-title');
+    const sub = infoPage.querySelector('.page-sub');
+    const searchBar = infoPage.querySelector('.info-search-bar');
+    if (title) title.style.display = 'none';
+    if (sub) sub.style.display = 'none';
+    if (searchBar) searchBar.style.display = 'none';
+    document.getElementById('infoSearch').value = bak;
+    renderInfo();
+    window.scrollTo(0, 0);
+  }
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────
+window.addEventListener('hashchange', checkHash);
+renderStats();
+renderTable();
+checkQueryParam();
+checkHash();
+</script>
+</body>
+</html>
